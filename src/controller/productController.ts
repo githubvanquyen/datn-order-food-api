@@ -51,7 +51,7 @@ class productController{
             }
         };
         getAllProduct(req: Request, res:Response){
-            res.send("get all product ^^")
+            res.send("Get")
         }
 }
 
