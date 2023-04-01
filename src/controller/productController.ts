@@ -10,7 +10,11 @@ class productController{
         let response: IResponse = {
             success: false,
             data: null,
-            message: "cannot create product"
+            message: "cannot create product",
+            error:{
+                field:"",
+                message:""
+            }
         }
         if(data.name === "" && data.regularPrice == ""){
             return response
@@ -34,12 +38,16 @@ class productController{
                     product.regularPrice = data.regularPrice
                     product.salePrice = data.salePrice
 
-                    const resultSave = await AppDataSource.manager.save(product)
+                    const resultSave = await AppDataSource.manager.save(Product, product)
                     if(resultSave){
                         response = {
                             success: true,
                             data: resultSave,
-                            message: "create product successfully"
+                            message: "create product successfully",
+                            error:{
+                                field:"",
+                                message:""
+                            }
                         } 
                         return res.status(200).json(response)
                     }
