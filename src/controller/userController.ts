@@ -19,8 +19,8 @@ class userController{
         try {
             const {firstName, lastName, email, password} =  req.body;
             if(firstName !== "" && lastName !== "" && email !== "" && password !== ""){
-                const hasUser = await AppDataSource.manager.find(User, {where: {email: email}});
-                if(hasUser){
+                const hasUser = await AppDataSource.manager.find(User, {where: {email: email}});    
+                 if(hasUser && hasUser.length > 0){
                     result.message = "user already exists";
                     result.error = {
                         field: "email",

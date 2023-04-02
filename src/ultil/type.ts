@@ -11,9 +11,8 @@ export interface IResponse {
 export interface IRequestProduct {
     id: number | undefined
     name: string
-    images: string
+    image: string
     description: string
-    variant: string
     regularPrice: string
     salePrice: string
 } 
