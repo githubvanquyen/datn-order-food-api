@@ -15,9 +15,6 @@ export class Product extends BaseEntity{
     description: string
 
     @Column()
-    variant: string
-
-    @Column()
     regularPrice: string
 
     @Column()
