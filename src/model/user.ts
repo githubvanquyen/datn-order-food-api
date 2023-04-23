@@ -1,4 +1,5 @@
-import { BaseEntity, Column, PrimaryGeneratedColumn, Entity } from "typeorm";
+import { BaseEntity, Column, PrimaryGeneratedColumn, Entity, OneToMany } from "typeorm";
+import { Order } from "./order";
 
 @Entity()
 export class User extends BaseEntity{
@@ -19,4 +20,10 @@ export class User extends BaseEntity{
 
     @Column()
     token: string
+
+    @Column()
+    role: number
+
+    @OneToMany(() => Order, order => order.user)
+    orders: Order[]
 }

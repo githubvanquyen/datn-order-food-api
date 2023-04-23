@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { IResponse } from "../ultil/type";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
-import { User } from "../entities/user";
+import { User } from "../model/user";
 import { AppDataSource } from "../config/database";
 
 class userController{
@@ -39,6 +39,7 @@ class userController{
                                 newUser.email =  email;
                                 newUser.password =  hashPassword;
                                 newUser.token =  token;
+                                newUser.role = 0;
                                 const userSaved = await AppDataSource.manager.save(User, newUser);
                                 if(userSaved){
                                     result.success = true
