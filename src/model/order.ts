@@ -1,4 +1,4 @@
-import { BaseEntity, Column, PrimaryGeneratedColumn, Entity, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, Column, PrimaryGeneratedColumn, Entity, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable } from "typeorm";
 import { Collection } from "./collection";
 import { Product } from "./product";
 import { Variant } from "./variant";
@@ -22,9 +22,25 @@ export class Order extends BaseEntity{
     totalPrice: number
 
     @Column()
-    status: string
+    statusOrder: string
+
+    @Column()
+    statusPayment: string
+
+    @Column()
+    userName?: string
+
+    @Column()
+    totalPricePerProduct: string
+
+    @Column()
+    quantityPerProduct: string
+
+    @Column()
+    variant: string
     
-    @OneToMany(() => Product, product => product.order)
+    @ManyToMany(() => Product, product => product.orders)
+    @JoinTable()
     products: Product[]
     
     @ManyToOne(() => User, user => user.orders)

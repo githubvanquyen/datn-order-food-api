@@ -44,6 +44,55 @@ class productController{
                         }
                     })
                     if(collection){
+                        if(data.id !== undefined &&  data.id !== "create"){
+                            const product = await AppDataSource.manager.findOneBy(Product, {id: +data.id});
+                            if(product !== null){
+                                product.id = Number(data.id)
+                                product.name = data.name
+                                product.description = data.description
+                                product.image = result.url
+                                product.regularPrice = data.regularPrice
+                                product.salePrice = data.salePrice
+                                product.collection = collection
+                                const resultSave = await AppDataSource.manager.save(Product, product);
+                                if(resultSave){
+                                    if(data.variantId.length >0){
+                                        const dataVariants = data.variantName.map(async (variantName, index) =>{
+                                            const newVariant = await AppDataSource.manager.save(Variant, {
+                                                id: data.variantId[index],
+                                                title: data.variantType[index],
+                                                value: JSON.stringify(variantName.slice(0, variantName.length - 1)),
+                                                price: JSON.stringify(data.variantPrice[index].slice(0, data.variantName[index].length - 1)),
+                                                product: product
+                                            })
+                                            return newVariant
+                                        })
+                                        if(dataVariants && dataVariants.length === data.variantName.length){
+                                            response = {
+                                                success: true,
+                                                data: resultSave,
+                                                message: "update product successfully",
+                                                error:{
+                                                    field:"",
+                                                    message:""
+                                                }
+                                            }
+                                            return res.status(200).json(response)
+                                        }
+                                        response.message = "update variant failure"
+                                        return res.status(400).json(response)
+                                    }else{
+                                        response.message = "update variant failure"
+                                        return res.status(400).json(response)
+                                    }
+                                }else{
+                                    response.message = "update product failure"
+                                    return res.status(400).json(response)
+                                }
+
+                            }
+                            
+                        }
                         let product = new Product();
                         product.name = data.name
                         product.description = data.description
@@ -99,7 +148,11 @@ class productController{
                 message:"Could not get all product"
             }
             try{
-                const allProduct = await AppDataSource.manager.find(Product)
+                const allProduct = await AppDataSource.manager.find(Product,{
+                    relations:{
+                        collection: true,
+                    }
+                })
                 if(allProduct && allProduct.length > 0){
                     result.success = true;
                     result.data = allProduct,

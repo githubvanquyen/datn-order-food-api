@@ -105,6 +105,7 @@ class userController{
                             ... result,
                             success: true,
                             data: {
+                                id: hasUser.id,
                                 firstName: hasUser.firstName,
                                 lastName: hasUser.lastName,
                                 token: hasUser.token
@@ -133,6 +134,66 @@ class userController{
                 res.status(400).json({success: true, message: "verify token failure"})
             }
         })
+    };
+    getAllUser = async (req: Request, res: Response) =>{
+        let result: IResponse = {
+            success: false,
+            data: null,
+            message: "get all user failure",
+            error: {
+                field: "",
+                message: ""
+            }
+        }
+        try {
+            const users =  await AppDataSource.manager.find(User,{
+                relations: {
+                    orders: true,
+                }
+            });
+            if(users && users.length > 0){
+                result.data =  users;
+                result.success = true;
+                result.message = "get all customer successfully";
+            }else{
+                result.message = "haven't user"
+            }
+            res.status(200).json(result);
+        } catch (error) {
+            result.message = "get all user have error" + error;
+            res.status(500).json(result);
+        }
+    }
+
+    getUserById = async (req: Request, res: Response) =>{
+        const id = req.query.id as string;
+        let result: IResponse = {
+            success: false,
+            data: null,
+            message: "get all user failure",
+            error: {
+                field: "",
+                message: ""
+            }
+        }
+        try {
+            const users =  await AppDataSource.manager.findOne(User,{
+                where: {
+                    id: +id
+                }
+            });
+            if(users){
+                result.data =  users;
+                result.success = true;
+                result.message = "get customer successfully";
+            }else{
+                result.message = "haven't user"
+            }
+            res.status(200).json(result);
+        } catch (error) {
+            result.message = "get user have error" + error;
+            res.status(500).json(result);
+        }
     }
 }
 

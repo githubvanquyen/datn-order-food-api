@@ -1,5 +1,7 @@
-import { BaseEntity, Column, PrimaryGeneratedColumn, Entity, OneToMany } from "typeorm";
+import { BaseEntity, Column, PrimaryGeneratedColumn, Entity, OneToMany, ManyToOne, ManyToMany, JoinTable } from "typeorm";
 import { Order } from "./order";
+import { Comment } from "./comment";
+import { Discounts } from "./discounts";
 
 @Entity()
 export class User extends BaseEntity{
@@ -19,6 +21,9 @@ export class User extends BaseEntity{
     password: string
 
     @Column()
+    phoneNumber: string
+
+    @Column()
     token: string
 
     @Column()
@@ -26,4 +31,11 @@ export class User extends BaseEntity{
 
     @OneToMany(() => Order, order => order.user)
     orders: Order[]
+
+    @ManyToOne(() => Discounts, discount => discount.products)
+    @JoinTable()
+    discountCodes: Discounts[]
+
+    @ManyToOne(() => Comment, comment => comment.user)
+    comments: Comment
 }

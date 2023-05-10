@@ -6,6 +6,10 @@ import * as dotenv from "dotenv"
 import { Collection } from "../model/collection"
 import { Variant } from "../model/variant"
 import { Order } from "../model/order"
+import { Comment } from "../model/comment"
+import { Flashsale } from "../model/flashsale"
+import { Discounts } from "../model/discounts"
+import { Blog } from "../model/blog"
 dotenv.config()
 
 const {HOST, PORT_DB,PASSWORD, DATABASE, USERNAME} = process.env
@@ -19,5 +23,5 @@ export const AppDataSource = new DataSource({
     database: DATABASE,
     synchronize: true,
     logging: false,
-    entities: [User, Store, Collection, Variant, Product, Order]
+    entities: [User, Store, Collection, Variant, Product, Order, Comment, Flashsale, Discounts, Blog]
 })

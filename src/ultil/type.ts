@@ -9,7 +9,7 @@ export interface IResponse {
 }
 
 export interface IRequestProduct {
-    id: number | undefined
+    id: string | undefined
     name: string
     image: string
     description: string
@@ -18,13 +18,15 @@ export interface IRequestProduct {
     collectionId: number
     variantName: string[][]
     variantPrice: number[][] 
-    variantType: string[]
+    variantType: string[],
+    variantId: number[]
 } 
 
 export interface IRequestCollection {
     id: number | undefined
     name: string
     image: string
+    productIds: number[]
 } 
 
 export interface productReq {

@@ -14,7 +14,8 @@ interface dataReq{
     products: productReq[],
     username: string,
     address: string,
-    user: string
+    user: string,
+    userName: string,
 }
 
 class paymentController{
@@ -32,22 +33,21 @@ class paymentController{
         const {
             methodPayment,
             products,
-            username,
             address,
-            user
+            user,
+            userName
         }: dataReq = req.body;
-
-        console.log("data", req.body);
 
         try {
             const order = new Order();
             const productId =  products.map((product) => product.productId)
-            console.log(productId);
             const productList =  await AppDataSource.manager.find(Product, {
                 where:{
                     id: In(productId),
                 }
             })
+            console.log(productList);
+            
 
             let userFind = await AppDataSource.manager.findOne(User, {
                 where:{
@@ -60,13 +60,33 @@ class paymentController{
                 total += product.quantity * product.productPrice
             })
 
+            let variant =  products.map(item =>({
+                productId: item.productId,
+                variantInfo: item.variantInfo
+            }))
+
+            let totalPricePerProduct = products.map(item =>({
+                productId: item.productId,
+                totalPrice: item.productPrice,
+            }))
+
+            let quantityPerProduct = products.map(item =>({
+                productId: item.productId,
+                quantity: item.quantity
+            }))
+
             order.addressShiping =  address;
             order.note = "";
             order.methodPayment= methodPayment;
             order.products = productList;
             order.user = userFind;
-            order.status = "-1";
+            order.statusPayment = "-1";
             order.totalPrice = total;
+            order.totalPricePerProduct = JSON.stringify(totalPricePerProduct);
+            order.quantityPerProduct =  JSON.stringify(quantityPerProduct);
+            order.statusOrder = "-1";
+            order.variant = JSON.stringify(variant);
+            order.userName = userName;
             const resultSave = await AppDataSource.manager.save(Order, order);
             if(resultSave){
                 result.success =  true;
