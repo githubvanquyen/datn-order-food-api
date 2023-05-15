@@ -17,14 +17,23 @@ class userController{
             }
         }
         try {
-            const {firstName, lastName, email, password} =  req.body;
-            if(firstName !== "" && lastName !== "" && email !== "" && password !== ""){
+            const {firstName, lastName, email, password, phoneNumber} =  req.body;
+            if(firstName !== "" && lastName !== "" && email !== "" && password !== "" && phoneNumber !== ""){
                 const hasUser = await AppDataSource.manager.find(User, {where: {email: email}});    
                  if(hasUser && hasUser.length > 0){
                     result.message = "user already exists";
                     result.error = {
                         field: "email",
                         message: "email already exists"
+                    }
+                    return res.status(400).json(result)
+                }
+                const hasUserPhone = await AppDataSource.manager.find(User, {where: {phoneNumber: phoneNumber}});
+                if(hasUserPhone && hasUserPhone.length > 0){
+                    result.message = "user already exists";
+                    result.error = {
+                        field: "email",
+                        message: "phone number already exists"
                     }
                     return res.status(400).json(result)
                 }
@@ -38,6 +47,7 @@ class userController{
                                 newUser.lastName = lastName;
                                 newUser.email =  email;
                                 newUser.password =  hashPassword;
+                                newUser.phoneNumber = phoneNumber
                                 newUser.token =  token;
                                 newUser.role = 0;
                                 const userSaved = await AppDataSource.manager.save(User, newUser);
@@ -84,16 +94,23 @@ class userController{
                 message: ""
             }
         }
-        const {email, password} = req.body;
-        if(email !== "" && password !== ""){
-            const hasUser =  await AppDataSource.manager.findOne(User, {where:{email: email}})
+        const {emailOrPhoneNumber, password} = req.body;
+        if(emailOrPhoneNumber !== "" && password !== ""){
+            let hasUser;
+            var reg = /^\d+$/;
+            
+            if(reg.test(emailOrPhoneNumber)){
+                hasUser = await AppDataSource.manager.findOne(User, {where:{phoneNumber: emailOrPhoneNumber}})
+            }else{
+                hasUser = await AppDataSource.manager.findOne(User, {where:{email: emailOrPhoneNumber}})
+            }
             if(!hasUser){
                 result = {
                     ...result,
                     message:"user doesn't existes",
                     error:{
                         field: "email",
-                        message: "wrong email"
+                        message: "wrong email or phone number"
                     }
                 }
                 return res.status(400).json(result)
@@ -104,12 +121,7 @@ class userController{
                         result = {
                             ... result,
                             success: true,
-                            data: {
-                                id: hasUser.id,
-                                firstName: hasUser.firstName,
-                                lastName: hasUser.lastName,
-                                token: hasUser.token
-                            },
+                            data: hasUser,
                             message: "login successfully",
                         }
                         res.status(200). json(result)
@@ -123,6 +135,7 @@ class userController{
                     res.status(400).json(result)
                 }
             }
+            
         }
     };
     checkAuth = (req: Request, res: Response) =>{

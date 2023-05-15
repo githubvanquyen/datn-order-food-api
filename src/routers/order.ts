@@ -6,5 +6,6 @@ route.get("/get-all-order", orderController.getAllOrder)
 route.get("/get-order-by-id", orderController.getOrderById)
 route.put("/update-status-order", orderController.updateStatusOrder)
 route.get("/get-order-by-customer", orderController.getOrderByCustomer)
+route.get("/get-order-by-time", orderController.getOrderByTime)
 
 export default route

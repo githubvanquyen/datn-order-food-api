@@ -16,6 +16,7 @@ interface dataReq{
     address: string,
     user: string,
     userName: string,
+    note: string
 }
 
 class paymentController{
@@ -35,7 +36,8 @@ class paymentController{
             products,
             address,
             user,
-            userName
+            userName,
+            note
         }: dataReq = req.body;
 
         try {
@@ -76,7 +78,7 @@ class paymentController{
             }))
 
             order.addressShiping =  address;
-            order.note = "";
+            order.note = note;
             order.methodPayment= methodPayment;
             order.products = productList;
             order.user = userFind;

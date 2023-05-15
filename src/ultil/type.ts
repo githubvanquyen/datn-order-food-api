@@ -23,7 +23,7 @@ export interface IRequestProduct {
 } 
 
 export interface IRequestCollection {
-    id: number | undefined
+    id: string
     name: string
     image: string
     productIds: number[]

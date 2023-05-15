@@ -9,7 +9,10 @@ export class Blog extends BaseEntity{
     title: string
 
     @Column()
-    content: number
+    image: string
+
+    @Column()
+    content: string
 
     @CreateDateColumn()
     createdAt: Date

@@ -26,7 +26,9 @@ export class Product extends BaseEntity{
     @Column()
     salePrice: string
     
-    @ManyToOne(() => Collection, collection => collection.products)
+    @ManyToOne(() => Collection, collection => collection.products, {
+        onDelete: "CASCADE"
+    })
     @JoinColumn()
     collection: Collection
 
@@ -34,19 +36,27 @@ export class Product extends BaseEntity{
     @JoinColumn()
     variants: Variant[]
 
-    @ManyToOne(() => Order, order => order.products)
+    @ManyToOne(() => Order, order => order.products, {
+        onDelete: "CASCADE"
+    })
     @JoinTable()
     orders: Order[]
 
-    @ManyToOne(() => Flashsale, flashsale => flashsale.products)
+    @ManyToOne(() => Flashsale, flashsale => flashsale.products, {
+        onDelete: "CASCADE"
+    })
     @JoinTable()
     flashsales: Flashsale[]
     
-    @ManyToOne(() => Discounts, discount => discount.products)
+    @ManyToOne(() => Discounts, discount => discount.products, {
+        onDelete: "CASCADE"
+    })
     @JoinTable()
     discountCodes: Discounts[]
     
-    @ManyToOne(() => Comment, comment => comment.product)
+    @ManyToOne(() => Comment, comment => comment.product, {
+        onDelete: "CASCADE"
+    })
     @JoinColumn()
     comments: Comment
 }

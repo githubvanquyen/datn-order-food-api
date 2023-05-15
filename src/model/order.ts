@@ -39,11 +39,15 @@ export class Order extends BaseEntity{
     @Column()
     variant: string
     
-    @ManyToMany(() => Product, product => product.orders)
+    @ManyToMany(() => Product, product => product.orders, {
+        onDelete: "CASCADE"
+    })
     @JoinTable()
     products: Product[]
     
-    @ManyToOne(() => User, user => user.orders)
+    @ManyToOne(() => User, user => user.orders, {
+        onDelete: "CASCADE"
+    })
     user?: User
 
     @CreateDateColumn()

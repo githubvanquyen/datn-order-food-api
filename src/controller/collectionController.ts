@@ -37,9 +37,10 @@ class collectionController{
                             field:"image",
                             message:"could not upload image"
                         }
+                        response.success = false
                         console.log(error);
                         response.message = "could not upload image" + error.toString()
-                        return res.status(400).json(response)
+                        return res.status(200).json(response)
                     }
                     const products = await AppDataSource.manager.find(Product, {
                         where:{
@@ -47,6 +48,9 @@ class collectionController{
                         }
                     })
                     let collection = new Collection();
+                    if(data.id !== "create"){
+                        collection.id = Number(data.id)
+                    }
                     collection.name = data.name
                     collection.image = result.url
                     collection.products = products
@@ -124,6 +128,7 @@ class collectionController{
         };
         async getCollectionById(req: Request, res:Response){
             let id = req.query.id?.toString();
+            console.log("id", id)
             let result:IResponse = {
                 success: false,
                 data: null,
@@ -171,11 +176,25 @@ class collectionController{
             }
             if(id === undefined){
                 result.message = "missing params !";
-                res.status(400).json(result)
+                res.status(200).json(result)
             }else{
                 try{
+                    // const productOfCollection = await AppDataSource.manager.findOne(Collection, {
+                    //     where:{
+                    //         id: id,
+                    //     },
+                    //     relations:{
+                    //         products: true
+                    //     }
+                    // })
+                    // console.log(productOfCollection);
+                    
+                    // if(productOfCollection){
+                       
+                    // }
                     const deleteCollection = await AppDataSource.manager.delete(Collection, {
                         id: id,
+                        
                     })
                     if(deleteCollection){
                         result.success = true;
@@ -184,8 +203,9 @@ class collectionController{
                     }
                     res.status(200).json(result)
                 }catch(e: any){
+                    result.success = false,
                     result.message = e.toString();
-                    res.status(400).json(result)
+                    res.status(200).json(result)
                 }
             }
             

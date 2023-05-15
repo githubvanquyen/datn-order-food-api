@@ -12,7 +12,9 @@ export class Collection extends BaseEntity{
     @Column()
     image: string
 
-    @OneToMany(()=> Product, product => product.collection)
+    @OneToMany(()=> Product, product => product.collection, {
+        onDelete: "CASCADE"
+    })
     @JoinColumn()
     products: Product[]
 }

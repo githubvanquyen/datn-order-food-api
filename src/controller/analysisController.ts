@@ -4,7 +4,7 @@ import { Comment } from "../model/comment";
 import { Product } from "../model/product";
 import { User } from "../model/user";
 import { Flashsale } from "../model/flashsale";
-import { In } from "typeorm";
+import { Between, In } from "typeorm";
 import dateFormat from "../ultil/dateFormat";
 import { log } from "console";
 import { Order } from "../model/order";
@@ -33,7 +33,22 @@ class analysisController {
         try {
             const orders = await AppDataSource.manager.find(Order);
             const users = await AppDataSource.manager.find(User);
-            if(orders){;
+            const products = await AppDataSource.manager.find(Product);
+            const flashsale = await AppDataSource.manager.find(Flashsale);
+            const date = new Date();
+            const month = date.getMonth();
+            let t0 = new Date();
+            let t1 = new Date();
+            let t2 = new Date();
+            let t3 = new Date();
+            t0.setMonth(month - 3);
+            t1.setMonth(month - 2);
+            t2.setMonth(month - 1);
+            t3.setMonth(month);
+            const orderT0 = await AppDataSource.manager.find(Order, {where: {createdAt: Between(t0, t1)}})
+            const orderT1 = await AppDataSource.manager.find(Order, {where: {createdAt: Between(t1, t2)}})
+            const orderT2 = await AppDataSource.manager.find(Order, {where: {createdAt: Between(t2, t3)}})
+            if(orders){
                 const orderNotConfirm =  orders.filter(item => (item.statusOrder === "-1"))
                 const orderConfirm =  orders.filter(item => (item.statusOrder === "0"))
                 const orderSuccess =  orders.filter(item => (item.statusOrder === "1"))
@@ -43,7 +58,16 @@ class analysisController {
                         notConfirm: orderNotConfirm.length,
                         confirm: orderConfirm.length,
                         orderSuccess: orderSuccess.length
-                    }
+                    },
+                    ordersPriceMonth :[
+                        orderT0.length,
+                        orderT1.length,
+                        orderT2.length 
+                    ],
+                    product: products.length,
+                    order: orders.length,
+                    user: users.length,
+                    flashsale: flashsale.length
                 };
                 result.message = "get analysis succesfully";
                 res.status(200).json(result);

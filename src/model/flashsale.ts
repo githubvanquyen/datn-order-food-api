@@ -12,7 +12,9 @@ export class Flashsale extends BaseEntity{
     @Column()
     discountType: number
    
-    @ManyToMany(() => Product, product => product.flashsales)
+    @ManyToMany(() => Product, product => product.flashsales, {
+        onDelete: "CASCADE"
+    })
     @JoinTable()
     products: Product[]
 

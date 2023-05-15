@@ -29,13 +29,19 @@ export class User extends BaseEntity{
     @Column()
     role: number
 
-    @OneToMany(() => Order, order => order.user)
+    @OneToMany(() => Order, order => order.user, {
+        onDelete: "CASCADE"
+    })
     orders: Order[]
 
-    @ManyToOne(() => Discounts, discount => discount.products)
+    @ManyToOne(() => Discounts, discount => discount.products, {
+        onDelete: "CASCADE"
+    })
     @JoinTable()
     discountCodes: Discounts[]
 
-    @ManyToOne(() => Comment, comment => comment.user)
+    @ManyToOne(() => Comment, comment => comment.user, {
+        onDelete: "CASCADE"
+    })
     comments: Comment
 }

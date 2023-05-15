@@ -34,9 +34,8 @@ class productController{
                             field:"image",
                             message:"could not upload image"
                         }
-                        console.log(error);
                         response.message = "could not upload image" + error.toString()
-                        return res.status(400).json(response)
+                        return res.status(200).json(response)
                     }
                     let collection = await AppDataSource.manager.findOne(Collection, {
                         where:{
@@ -79,15 +78,18 @@ class productController{
                                             }
                                             return res.status(200).json(response)
                                         }
+                                        response.success = false
                                         response.message = "update variant failure"
-                                        return res.status(400).json(response)
+                                        return res.status(200).json(response)
                                     }else{
+                                        response.success = false
                                         response.message = "update variant failure"
-                                        return res.status(400).json(response)
+                                        return res.status(200).json(response)
                                     }
                                 }else{
+                                    response.success = false
                                     response.message = "update product failure"
-                                    return res.status(400).json(response)
+                                    return res.status(200).json(response)
                                 }
 
                             }
@@ -124,6 +126,7 @@ class productController{
                                 }
                                 return res.status(200).json(response)
                             }
+                            response.success = false
                             response.message = "create variant failure"
                             return res.status(400).json(response)
                         }
@@ -198,6 +201,10 @@ class productController{
         };
         async getProductByName(req: Request, res: Response){
             const name = req.query.name as string;
+            let findBy = "name";
+            if(parseInt(name) == +name){
+                findBy =  "price";
+            }
             let result: IResponse = {
                 success: false,
                 data: null,
@@ -208,15 +215,28 @@ class productController{
                 message:"Could not get product"
             }
             try{
-                const product = await AppDataSource.manager.find(Product, {
-                    where:{
-                        name: Like(`%${name}%`),
-                    },
-                    relations:{
-                        variants: true,
-                        collection: true
-                    }
-                })
+                let product;
+                if(findBy == "name"){
+                    product = await AppDataSource.manager.find(Product, {
+                        where:{
+                            name: Like(`%${name}%`)
+                        },
+                        relations:{
+                            variants: true,
+                            collection: true
+                        }
+                    })
+                }else{
+                    product = await AppDataSource.manager.find(Product, {
+                        where:{
+                            salePrice: Like(name)
+                        },
+                        relations:{
+                            variants: true,
+                            collection: true
+                        }
+                    })
+                }
                 if(product && product.length > 0){
                     result.success = true;
                     result.data = product,

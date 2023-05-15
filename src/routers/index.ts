@@ -7,6 +7,7 @@ import commentRouters from "./comment";
 import flashsaleRouters from "./flashsale";
 import discountRouters from "./discount";
 import analysisRouters from "./analysis";
+import blogRouters from "./blog";
 import { Express } from "express";
 
 const route = (app: Express) =>{
@@ -19,6 +20,7 @@ const route = (app: Express) =>{
     app.use("/api/flashsale", flashsaleRouters)
     app.use("/api/discount", discountRouters)
     app.use("/api/analysis", analysisRouters)
+    app.use("/api/blog", blogRouters)
 }
 
 export default route

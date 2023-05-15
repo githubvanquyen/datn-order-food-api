@@ -28,11 +28,15 @@ export class Discounts extends BaseEntity{
     @Column()
     quantity: number
     
-    @ManyToMany(() => Product, product => product.discountCodes)
+    @ManyToMany(() => Product, product => product.discountCodes,{
+        onDelete: "CASCADE"
+    })
     @JoinTable()
     products?: Product[]
     
-    @ManyToMany(() => User, user => user.discountCodes)
+    @ManyToMany(() => User, user => user.discountCodes, {
+        onDelete: "CASCADE"
+    })
     @JoinTable()
     users?: User[]
 

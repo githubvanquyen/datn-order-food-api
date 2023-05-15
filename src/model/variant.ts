@@ -15,6 +15,8 @@ export class Variant extends BaseEntity{
     @Column()
     price: string
 
-    @ManyToOne(()=> Product, product => product.variants)
+    @ManyToOne(()=> Product, product => product.variants, {
+        onDelete: "CASCADE"
+    })
     product: Product
 }
