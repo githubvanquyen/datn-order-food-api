@@ -1,6 +1,7 @@
 import { BaseEntity, Column, PrimaryGeneratedColumn, Entity, CreateDateColumn, UpdateDateColumn, ManyToMany, JoinTable, ManyToOne } from "typeorm";
 import { Product } from "./product";
 import { User } from "./user";
+import { Order } from "./order";
 
 @Entity()
 export class Discounts extends BaseEntity{
@@ -39,6 +40,12 @@ export class Discounts extends BaseEntity{
     })
     @JoinTable()
     users?: User[]
+
+    @ManyToMany(() => Order, order => order.discount, {
+        onDelete: "CASCADE"
+    })
+    @JoinTable()
+    orders?: Order[]
 
     @CreateDateColumn()
     createdAt: Date

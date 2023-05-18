@@ -53,7 +53,8 @@ class orderController{
                     user: true,
                     products:{
                         variants: true
-                    }
+                    },
+                    discount: true
                 }
             });
             if(orders){
@@ -74,7 +75,7 @@ class orderController{
                     variant: JSON.parse(orders.variant),
                     quantityPerProduct: JSON.parse(orders.quantityPerProduct),
                     totalPricePerProduct: JSON.parse(orders.totalPricePerProduct),
-                    products: products
+                    products: products,
                 };
             }
             res.status(200).json(result);
@@ -85,6 +86,7 @@ class orderController{
     }
     updateStatusOrder =  async (req: Request, res: Response)=>{
         const statusOrder = req.body.statusOrder as string;
+        const statusPayment = req.body.statusPayment as string;
         const id = req.body.id as string;
         const result:IResponse = {
             success: true,
@@ -103,6 +105,7 @@ class orderController{
             })
             if(hasOrder !== null){
                 hasOrder.statusOrder = statusOrder;
+                hasOrder.statusPayment = statusPayment
                 const updateOrder = await AppDataSource.manager.save(Order, hasOrder)
                 if(updateOrder !== null){
                     result.success = true;

@@ -143,7 +143,7 @@ class discountController {
                     id: +id
                 },
                 relations: {
-                    products: true
+                    users: true
                 }
             });
             if(discount){

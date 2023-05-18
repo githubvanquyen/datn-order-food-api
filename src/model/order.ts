@@ -3,6 +3,7 @@ import { Collection } from "./collection";
 import { Product } from "./product";
 import { Variant } from "./variant";
 import { User } from "./user";
+import { Discounts } from "./discounts";
 
 @Entity()
 export class Order extends BaseEntity{
@@ -31,6 +32,9 @@ export class Order extends BaseEntity{
     userName?: string
 
     @Column()
+    phoneNumber: string
+
+    @Column()
     totalPricePerProduct: string
 
     @Column()
@@ -49,6 +53,11 @@ export class Order extends BaseEntity{
         onDelete: "CASCADE"
     })
     user?: User
+
+    @ManyToOne(() => Discounts, discount => discount.orders, {
+        onDelete: "CASCADE"
+    })
+    discount?: Discounts
 
     @CreateDateColumn()
     createdAt: Date

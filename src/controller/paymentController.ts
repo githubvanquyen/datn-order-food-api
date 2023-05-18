@@ -7,6 +7,7 @@ import { Collection } from "../model/collection";
 import { In, Like } from "typeorm";
 import { Order } from "../model/order";
 import { User } from "../model/user";
+import { Discounts } from "../model/discounts";
 const https = require('https');
 
 interface dataReq{
@@ -16,7 +17,9 @@ interface dataReq{
     address: string,
     user: string,
     userName: string,
+    phoneNumber: string,
     note: string
+    discountId: number,
 }
 
 class paymentController{
@@ -37,7 +40,9 @@ class paymentController{
             address,
             user,
             userName,
-            note
+            note,
+            discountId,
+            phoneNumber
         }: dataReq = req.body;
 
         try {
@@ -48,8 +53,17 @@ class paymentController{
                     id: In(productId),
                 }
             })
-            console.log(productList);
-            
+
+            let discount;
+            if(discountId !== 0){
+                discount = await AppDataSource.manager.findOne(Discounts, {where:{id: discountId}})
+                if(discount) {
+                    await AppDataSource.manager.save(Discounts, {
+                        id: discountId,
+                        quantity: discount.quantity - 1
+                    })
+                }
+            }
 
             let userFind = await AppDataSource.manager.findOne(User, {
                 where:{
@@ -84,11 +98,13 @@ class paymentController{
             order.user = userFind;
             order.statusPayment = "-1";
             order.totalPrice = total;
+            order.phoneNumber = phoneNumber;
             order.totalPricePerProduct = JSON.stringify(totalPricePerProduct);
             order.quantityPerProduct =  JSON.stringify(quantityPerProduct);
             order.statusOrder = "-1";
             order.variant = JSON.stringify(variant);
             order.userName = userName;
+            order.discount =  discount || undefined;
             const resultSave = await AppDataSource.manager.save(Order, order);
             if(resultSave){
                 result.success =  true;

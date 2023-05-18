@@ -30,12 +30,77 @@ class productController{
                 },
                 async (error: any, result: any) =>{
                     if(error){
-                        response.error = {
-                            field:"image",
-                            message:"could not upload image"
+                        if(data.id !== "create" && data.id !== undefined){
+                            let collection = await AppDataSource.manager.findOne(Collection, {
+                                where:{
+                                    id: data.collectionId,
+                                }
+                            })
+                            if(collection){
+                                const product = await AppDataSource.manager.findOneBy(Product, {id: +data.id});
+                                if(product !== null && data.id !== undefined){
+                                    product.id = Number(data.id)
+                                    product.name = data.name
+                                    product.description = data.description
+                                    product.regularPrice = data.regularPrice
+                                    product.salePrice = data.salePrice
+                                    product.collection = collection
+                                    const resultSave = await AppDataSource.manager.save(Product, product);
+                                    if(resultSave){
+                                        if(data.variantId.length >0){
+                                            const dataVariants = data.variantName.map(async (variantName, index) =>{
+                                                const newVariant = await AppDataSource.manager.save(Variant, {
+                                                    id: data.variantId[index],
+                                                    title: data.variantType[index],
+                                                    value: JSON.stringify(variantName.slice(0, variantName.length - 1)),
+                                                    price: JSON.stringify(data.variantPrice[index].slice(0, data.variantName[index].length - 1)),
+                                                    product: product
+                                                })
+                                                return newVariant
+                                            })
+                                            if(dataVariants && dataVariants.length === data.variantName.length){
+                                                response = {
+                                                    success: true,
+                                                    data: resultSave,
+                                                    message: "update product successfully",
+                                                    error:{
+                                                        field:"",
+                                                        message:""
+                                                    }
+                                                }
+                                                return res.status(200).json(response)
+                                            }
+                                            response.success = false
+                                            response.message = "update variant failure"
+                                            return res.status(200).json(response)
+                                        }else{
+                                            response = {
+                                                success: true,
+                                                data: resultSave,
+                                                message: "update product successfully",
+                                                error:{
+                                                    field:"",
+                                                    message:""
+                                                }
+                                            }
+                                            return res.status(200).json(response)
+                                        }
+                                    }else{
+                                        response.success = false
+                                        response.message = "update product failure"
+                                        return res.status(200).json(response)
+                                    }
+    
+                                }
+                            }
+                        }else{
+                            response.error = {
+                                field:"image",
+                                message:"could not upload image"
+                            }
+                            response.message = "could not upload image" + error.toString()
+                            return res.status(200).json(response)
                         }
-                        response.message = "could not upload image" + error.toString()
-                        return res.status(200).json(response)
                     }
                     let collection = await AppDataSource.manager.findOne(Collection, {
                         where:{
@@ -82,8 +147,15 @@ class productController{
                                         response.message = "update variant failure"
                                         return res.status(200).json(response)
                                     }else{
-                                        response.success = false
-                                        response.message = "update variant failure"
+                                        response = {
+                                            success: true,
+                                            data: resultSave,
+                                            message: "update product successfully",
+                                            error:{
+                                                field:"",
+                                                message:""
+                                            }
+                                        }
                                         return res.status(200).json(response)
                                     }
                                 }else{

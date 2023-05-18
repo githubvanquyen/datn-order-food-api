@@ -4,6 +4,7 @@ import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { User } from "../model/user";
 import { AppDataSource } from "../config/database";
+import { In, Like } from "typeorm";
 
 class userController{
     register = async (req: Request, res: Response) =>{
@@ -125,6 +126,16 @@ class userController{
                             message: "login successfully",
                         }
                         res.status(200). json(result)
+                    }else{
+                        result = {
+                            ...result,
+                            message:"user doesn't existes",
+                            error:{
+                                field: "email",
+                                message: "wrong email or phone number"
+                            }
+                        }
+                        return res.status(400).json(result)
                     }
                 } catch (error) {
                     result = {
@@ -193,6 +204,38 @@ class userController{
             const users =  await AppDataSource.manager.findOne(User,{
                 where: {
                     id: +id
+                }
+            });
+            if(users){
+                result.data =  users;
+                result.success = true;
+                result.message = "get customer successfully";
+            }else{
+                result.message = "haven't user"
+            }
+            res.status(200).json(result);
+        } catch (error) {
+            result.message = "get user have error" + error;
+            res.status(500).json(result);
+        }
+    }
+
+
+    getUserByName = async (req: Request, res: Response) =>{
+        const name = req.query.name as string;
+        let result: IResponse = {
+            success: false,
+            data: null,
+            message: "get user failure",
+            error: {
+                field: "",
+                message: ""
+            }
+        }
+        try {
+            const users =  await AppDataSource.manager.find(User,{
+                where: {
+                    lastName: Like(`%${name}%`)
                 }
             });
             if(users){

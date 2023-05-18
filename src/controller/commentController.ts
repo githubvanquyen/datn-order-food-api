@@ -32,7 +32,8 @@ class commentController {
                     field: "user",
                     message: "You need login to create comment"
                 }
-                res.status(400).json(result);
+                result.success = false;
+                res.status(200).json(result);
             }else{
                 const product = await AppDataSource.manager.findOne(Product, {where: {id: productId}});
                 if(product){

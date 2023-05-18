@@ -33,14 +33,45 @@ class collectionController{
                 },
                 async (error: any, result: any) =>{
                     if(error){
-                        response.error = {
-                            field:"image",
-                            message:"could not upload image"
+                        if(data.id !== "create"){
+                            const products = await AppDataSource.manager.find(Product, {
+                                where:{
+                                    id: In(data.productIds)
+                                }
+                            })
+                            const collection = await AppDataSource.manager.findOne(Collection, {
+                                where: {
+                                    id: Number(data.id)
+                                }
+                            })
+                            if(collection){
+                                collection.name = data.name
+                                collection.products = products
+                                const resultSave = await AppDataSource.manager.save(Collection, collection)
+                                if(resultSave){
+                                    response = {
+                                        success: true,
+                                        data: resultSave,
+                                        message: "update collection successfully",
+                                        error:{
+                                            field:"",
+                                            message:""
+                                        }
+                                    } 
+                                    return res.status(200).json(response)
+                                }
+                                return res.status(400).json(response)
+                            }
+                        }else{
+                            response.error = {
+                                field:"image",
+                                message:"could not upload image"
+                            }
+                            response.success = false
+                            console.log(error);
+                            response.message = "could not upload image" + error.toString()
+                            return res.status(200).json(response)
                         }
-                        response.success = false
-                        console.log(error);
-                        response.message = "could not upload image" + error.toString()
-                        return res.status(200).json(response)
                     }
                     const products = await AppDataSource.manager.find(Product, {
                         where:{

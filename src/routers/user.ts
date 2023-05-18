@@ -7,5 +7,6 @@ route.post("/login", userController.login);
 route.post("/checkAuth", userController.checkAuth);
 route.get("/get-all-user", userController.getAllUser);
 route.get("/get-user-by-id", userController.getUserById);
+route.get("/get-user-by-name", userController.getUserByName);
 
 export default route
